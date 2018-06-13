@@ -11,18 +11,18 @@ module Utils
   end
 
   # Calculates light at a point using Phong Reflection Model
-  def self.calc_light(view, normal)
+  def self.calc_light(view, normal, ka, kd, ks)
     total_diff = [0, 0, 0]
     total_spec = [0, 0, 0]
-    ambient = $AMBIENT_LIGHT.zip($Ka).map{|x, y| x * y}
+    ambient = $AMBIENT_LIGHT.zip(ka).map{|x, y| x * y}
 
     v = VectorUtils.normalize(view)
     n = VectorUtils.normalize(normal)
     for light in $POINT_LIGHTS
       l = VectorUtils.normalize(light["location"])
 
-      diffuse  = light["color"].zip($Kd).map{|x, y| x * y}
-      specular = light["color"].zip($Ks).map{|x, y| x * y}
+      diffuse  = light["color"].zip(kd).map{|x, y| x * y}
+      specular = light["color"].zip(ks).map{|x, y| x * y}
 
       costheta = VectorUtils.dot_product(l, n)
       temp = VectorUtils.dot_product(n, l)
@@ -68,18 +68,21 @@ module Utils
     ops_list = code[0]
     symbol_table = code[1]
 
-    puts symbol_table
-
     #Parse for lights
     for var in symbol_table
-      puts var.to_s
-      if var[1][0] == "light"
-        $POINT_LIGHTS.push(var[1][1])
+      $POINT_LIGHTS.push(var[1][1]) if var[1][0] == "light"
+      if var[1][0] == "constants"
+        bad_format = var[1][1]
+
+        temp = {"ka"=>[], "kd"=>[], "ks"=>[]}
+        temp["ka"] = [bad_format["red"][0], bad_format["green"][0], bad_format["blue"][0]]
+        temp["kd"] = [bad_format["red"][1], bad_format["green"][1], bad_format["blue"][1]]
+        temp["ks"] = [bad_format["red"][2], bad_format["green"][2], bad_format["blue"][2]]
+
+        $CONSTANTS[var[0]] = temp
+        puts $CONSTANTS
       end
     end
-
-    puts $POINT_LIGHTS.to_s
-
 
     #parse for basic anim commands, throw duplicate errors
     for operation in ops_list
@@ -97,7 +100,7 @@ module Utils
         raise "ERROR: Vary called before definition of frames" if !$FRAMES
       end
     end
-    ops_list = ops_list.delete_if{|x| x["op"] == "frames" or x["op"] == "basename"} #Clear useless ops
+    ops_list = ops_list.delete_if{|x| x["op"] == "frames" or x["op"] == "basename" or x["op"]=="light" or x["op"]=="constants"} #Clear useless ops
 
     $ANIMATION = ($FRAMES != nil)
     $FRAMES = 1 if !$ANIMATION
@@ -130,7 +133,7 @@ module Utils
       $SCREEN = Screen.new($RESOLUTION)
       $COORDSYS = CStack.new()
       for operation in ops_list
-        symbol_table = $KNOBFRAMES[currframe] if $ANIMATION
+        knobs = $KNOBFRAMES[currframe] if $ANIMATION
         puts "Executing: " + operation.to_s if $DEBUGGING
         args = operation["args"]
         case operation["op"]
@@ -148,40 +151,56 @@ module Utils
           temp = Matrix.new(4, 0)
           Draw.box(args[0], args[1], args[2], args[3], args[4], args[5], temp)
           MatrixUtils.multiply($COORDSYS.peek(), temp)
-          Draw.push_polygon_matrix(temp)
+          if operation.has_key?("constants")
+            ret = $CONSTANTS[operation["constants"]]
+            Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
+          else
+            Draw.push_polygon_matrix(temp)
+          end
         when "sphere"
           for i in (0...4); args[i] = args[i].to_f end
           puts "   With arguments: "  + args.to_s if $DEBUGGING
           temp = Matrix.new(4, 0)
           Draw.sphere(args[0], args[1], args[2], args[3], temp)
-          Draw.push_polygon_matrix(MatrixUtils.multiply($COORDSYS.peek(), temp))
+          MatrixUtils.multiply($COORDSYS.peek(), temp)
+          if operation.has_key?("constants")
+            ret = $CONSTANTS[operation["constants"]]
+            Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
+          else
+            Draw.push_polygon_matrix(temp)
+          end
         when "torus"
           for i in (0...5); args[i] = args[i].to_f end
           puts "   With arguments: "  + args.to_s if $DEBUGGING
           temp = Matrix.new(4, 0)
           Draw.torus(args[0], args[1], args[2], args[3], args[4], temp)
           MatrixUtils.multiply($COORDSYS.peek(), temp)
-          Draw.push_polygon_matrix(temp)
+          if operation.has_key?("constants")
+            ret = $CONSTANTS[operation["constants"]]
+            Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
+          else
+            Draw.push_polygon_matrix(temp)
+          end
         when "clear"
           $SCREEN = Screen.new($RESOLUTION)
         when "scale"
           for i in (0...3); args[i] = args[i].to_f end
           puts "   With arguments: "  + args.to_s if $DEBUGGING
-          puts "   And knobs: " + symbol_table.to_s if $DEBUGGING && $ANIMATION
-          k = ($ANIMATION && symbol_table[operation["knob"]]? symbol_table[operation["knob"]]: 1)
+          puts "   And knobs: " + knobs.to_s if $DEBUGGING && $ANIMATION
+          k = ($ANIMATION && knobs[operation["knob"]]? knobs[operation["knob"]]: 1)
           scale = MatrixUtils.dilation(k*args[0], k*args[1], k*args[2])
           $COORDSYS.modify_top(scale);
         when "move"
           for i in (0...3); args[i] = args[i].to_f end
           puts "   With arguments: "  + args.to_s if $DEBUGGING
-          puts "   And knobs: " + symbol_table.to_s if $DEBUGGING && $ANIMATION
-          k = ($ANIMATION && symbol_table[operation["knob"]]? symbol_table[operation["knob"]]: 1)
+          puts "   And knobs: " + knobs.to_s if $DEBUGGING && $ANIMATION
+          k = ($ANIMATION && knobs[operation["knob"]]? knobs[operation["knob"]]: 1)
           move = MatrixUtils.translation(k*args[0], k*args[1], k*args[2])
           $COORDSYS.modify_top(move);
         when "rotate"
           puts "   With arguments: "  + args.to_s if $DEBUGGING
-          puts "   And knobs: " + symbol_table.to_s if $DEBUGGING && $ANIMATION
-          k = ($ANIMATION && symbol_table[operation["knob"]]? symbol_table[operation["knob"]]: 1)
+          puts "   And knobs: " + knobs.to_s if $DEBUGGING && $ANIMATION
+          k = ($ANIMATION && knobs[operation["knob"]]? knobs[operation["knob"]]: 1)
           rotate = MatrixUtils.rotation(args[0], k*args[1].to_f)
           $COORDSYS.modify_top(rotate);
         when "ambient"
@@ -197,7 +216,7 @@ module Utils
         when "quit", "exit"
           exit 0
         else
-          #puts "WARNING: Unrecognized command: " + operation.to_s
+          puts "WARNING: Unrecognized command: " + operation.to_s
         end
       end
       if $ANIMATION

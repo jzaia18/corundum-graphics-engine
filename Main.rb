@@ -21,9 +21,6 @@ $TEMPFILE = "temmmmp.ppm" # Used as temp storage for displaying
 $COMPYLED_CODE_LOC = "__COMPYLED_CODE__"
 $OUTPUT_FOLDER = "anim/"
 $STEP = 12 # Number of iterations needed to to finish a parametric
-$AMBIENT_LIGHT = [150, 150, 150]
-$POINT_LIGHTS = []#[[0.5, 0.75, 1],[150, 150, 150]]
-$VIEW = [0, 0, 1]
 $FRAMES = nil
 $BASENAME = nil
 
@@ -31,9 +28,13 @@ $BASENAME = nil
 $SCREEN = Screen.new($RESOLUTION)
 $COORDSYS = CStack.new()
 $RC = $DRAW_COLOR[0]; $GC = $DRAW_COLOR[1]; $BC = $DRAW_COLOR[2]
-$Ka = [0.3, 0.3, 0.3] #Constant of ambient
-$Kd = [0.5, 0.5, 0.5] #Constant of diffuse
-$Ks = [0.5, 0.5, 0.5] #Constant of specular
+$AMBIENT_LIGHT = [150, 150, 150] #[r, g, b] (Default, if unspecified in mdl)
+$POINT_LIGHTS = []
+$CONSTANTS = {}
+$Ka = [0.3, 0.3, 0.3] #Constant of ambient (Default, if unspecified in mdl)
+$Kd = [0.5, 0.5, 0.5] #Constant of diffuse (Default, if unspecified in mdl)
+$Ks = [0.5, 0.5, 0.5] #Constant of specular (Default, if unspecified in mdl)
+$VIEW = [0, 0, 1]
 $ANIMATION = nil #Boolean representing whether output will be an animation (as opposed to a still image)
 $KNOBFRAMES = nil
 

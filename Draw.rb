@@ -266,7 +266,7 @@ module Draw
   end
 
   # Draw the pixels in the matrix
-  def self.push_polygon_matrix(polymat)
+  def self.push_polygon_matrix(polymat, ka: $Ka, kd: $Kd, ks: $Ks)
     i = 0
     while i < polymat.cols
       coord0 = polymat.get_col(i)
@@ -274,7 +274,7 @@ module Draw
       coord2 = polymat.get_col(i + 2)
       normal = calc_normal(coord0, coord1, coord2)
       if (normal[2] > 0)
-        color = Utils.calc_light($VIEW, normal)
+        color = Utils.calc_light($VIEW, normal, ka, kd, ks)
         fill_triangle(coord0, coord1, coord2, r: color[0], g: color[1], b: color[2])
       end
       i+=3
