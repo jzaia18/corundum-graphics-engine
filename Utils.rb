@@ -12,21 +12,29 @@ module Utils
 
   # Calculates light at a point using Phong Reflection Model
   def self.calc_light(view, normal)
+    total_diff = [0, 0, 0]
+    total_spec = [0, 0, 0]
+    ambient = $AMBIENT_LIGHT.zip($Ka).map{|x, y| x * y}
+
     v = VectorUtils.normalize(view)
     n = VectorUtils.normalize(normal)
-    l = VectorUtils.normalize($POINT_LIGHT[0])
+    for light in $POINT_LIGHTS
+      l = VectorUtils.normalize(light["location"])
 
-    ambient = $AMBIENT_LIGHT.zip($Ka).map{|x, y| x * y}
-    diffuse = $POINT_LIGHT[1].zip($Kd).map{|x, y| x * y}
-    specular = $POINT_LIGHT[1].zip($Ks).map{|x, y| x * y}
-    costheta = VectorUtils.dot_product(l, n)
-    temp = VectorUtils.dot_product(n, l)
-    cosalpha = [VectorUtils.dot_product(n.map{|a| a*temp*2}.zip(l).map{|a, b| a - b}, v), 0].max**8
+      diffuse  = light["color"].zip($Kd).map{|x, y| x * y}
+      specular = light["color"].zip($Ks).map{|x, y| x * y}
 
-    diffuse  = diffuse.map{|x| x*costheta}
-    specular = specular.map{|x| x*cosalpha}
+      costheta = VectorUtils.dot_product(l, n)
+      temp = VectorUtils.dot_product(n, l)
+      cosalpha = [VectorUtils.dot_product(n.map{|a| a*temp*2}.zip(l).map{|a, b| a - b}, v), 0].max**8
+      diffuse  = diffuse.map{|x| x*costheta}
+      specular = specular.map{|x| x*cosalpha}
 
-    return specular.zip(ambient.zip(diffuse).map{|x, y| x + y}).map{|x, y| x + y}.map{|x| restrict(x)} #exhales slowly
+      total_diff = total_diff.zip(diffuse).map{|x, y| x + y}
+      total_spec = total_spec.zip(specular).map{|x, y| x + y}
+    end
+
+    return total_spec.zip(ambient.zip(total_diff).map{|x, y| x + y}).map{|x, y| x + y}.map{|x| restrict(x)} #exhales slowly
   end
 
   def self.write_out(file: $OUTFILE)
@@ -59,6 +67,19 @@ module Utils
 
     ops_list = code[0]
     symbol_table = code[1]
+
+    puts symbol_table
+
+    #Parse for lights
+    for var in symbol_table
+      puts var.to_s
+      if var[1][0] == "light"
+        $POINT_LIGHTS.push(var[1][1])
+      end
+    end
+
+    puts $POINT_LIGHTS.to_s
+
 
     #parse for basic anim commands, throw duplicate errors
     for operation in ops_list
@@ -163,6 +184,8 @@ module Utils
           k = ($ANIMATION && symbol_table[operation["knob"]]? symbol_table[operation["knob"]]: 1)
           rotate = MatrixUtils.rotation(args[0], k*args[1].to_f)
           $COORDSYS.modify_top(rotate);
+        when "ambient"
+          $AMBIENT_LIGHT = args
         when "pop"
           $COORDSYS.pop()
         when "push"
