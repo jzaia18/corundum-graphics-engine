@@ -59,5 +59,8 @@ build-iPhoneSimulator/
 # Emacs backups
 ~*
 
+# PYC Files
+*.pyc
+
 parser.out
 parsetab.py
