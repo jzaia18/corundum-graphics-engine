@@ -1,7 +1,0 @@
-sphere whiteso 150 250 250 150
-sphere blueso 350 250 250 150
-light redso 1 0.5 1 255 0 0
-light greeno 0 0.5 1 0 255 0
-constants whiteso 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-constants blueso 0.3 0.3 0.3 0.3 0.3 0.3 0.8 0.8 0.8
-display

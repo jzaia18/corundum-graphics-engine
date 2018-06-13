@@ -1,15 +1,20 @@
-light redso 1 0.5 1 255 0 0
-light greeno 0 0.5 1 0 255 0
-constants shiny 0.1 0.3 0.7 0.1 0.3 0.7 0.1 0.3 0.7
-constants dull 0.1 0.7 0.3 0.1 0.7 0.3 0.1 0.7 0.3
-frames 100
-basename simple
+frames 50
+basename pikachu
+ambient 50 50 50
+constants yellow_fur 0.45 0.7 0.1  0.45 0.7 0.1  0.45 0 0.1
+constants shiny_white 0.3 0.2 0.7  0.3 0.2 0.7  0.3 0.2 0.7
+light direct 0 0.5 1 255 255 255
+light left -1 0 0 255 0 0
+light right 1 0 0 0 0 255
 push
-move 250 250 0
-scale 2 2 2 bigenator
-rotate y 360 spinny
-sphere shiny 100 0 0 100
-sphere dull -100 0 0 100
-vary spinny 0 99 0 1
-vary bigenator 0 49 0 1
-vary bigenator 50 99 1 0
+move 230 180 0
+scale 500 500 500
+rotate y 360 k0
+mesh yellow_fur :pikachu.obj
+pop
+push
+move 230 180 0
+rotate y 360 k0
+move 95 140 20
+sphere shiny_white 0 0 0 20
+vary k0 0 49 0 1

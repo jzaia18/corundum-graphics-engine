@@ -55,52 +55,40 @@ sphere [constants] x y z r [coord_system]
 torus [constants] x y z r0 r1  [coord_system]
 
 box [constants] x0 y0 z0 h w d [coord_system]
-			- x0 y0 z0 = one corner of the box
-			- h w d = height width and depth
+      - x0 y0 z0 = one corner of the box
+      - h w d = height width and depth
 
 line [constants] x0 y0 z0 [coord_system0] x1 y1 z1 [coord_system1]
-			- NOTE: each endpoint of the line can be drawn
-			  in its own coordinate system.
+      - NOTE: each endpoint of the line can be drawn
+        in its own coordinate system.
 
 mesh [constants] :filename [coord_system]
-			- load a mesh or set of edges (in some format that
-			  you can specify) from a file into the pointlist
-			  and or edge list directly.
+      - load a mesh or set of edges (in some format that
+        you can specify) from a file into the pointlist
+        and or edge list directly.
 
 Knobs/Animation
 ---------------
 basename name - sets the base filename to save under.
-			  This should be used in conjunction with
-			  either vary or tween. For example,
-			  if "name" is R, then tween or vary might
-			  save the images r01.miff, r02.miff etc.
+        This should be used in conjunction with
+        either vary or tween. For example,
+        if "name" is R, then tween or vary might
+        save the images r01.miff, r02.miff etc.
 
 set knobname value - sets a knobs value (in the symbol table).
-
-save_knobs knoblist - saves the current values of all knobs
-			  under the name "knoblist."
-    
-tween start_frame end_frame knoblist0 knoblist1
-			- generates a number of frames using basename
-			  as the base filename. It will start from
-			  start_frame and end at end_frame and
-			  interpolate the image using knoblist0 as
-			  the starting configuration and knoblist 2
-			  as the ending configuration.
 
 frames num_frames - How many frames to generate all together.
 
 vary knob start_frame end_frame start_val end_val
-			- vary a knob from start_val to end_val over
-			  the course of start_frame to end_frame
-setknobs value - set all the knobs to value
+      - vary a knob from start_val to end_val over
+        the course of start_frame to end_frame
 
 
 Lighting
 --------
 light name x y z r g b   - creates a "light" datastructure with rgb values
-			  r,g,b at location x,y,z.
-			  This is inserted into the symbol table.
+        r,g,b at location x,y,z.
+        This is inserted into the symbol table.
 
 ambient r g b - specifies how much ambient light is in the scene
 
@@ -110,30 +98,15 @@ constants name kar kdr ksr kag kdg ksg kab kdb ksb [r] [g] [b]
       - r g b intensities can be specified. If not specified, they
         default to 0.
 
-shading wireframe|flat|gouraud|phong|raytrace
-      - set the shading mode
-
 
 MISC
 ----
 // - comment to the end of a line, just like c++
-save_coord_system name
-			- Makes a copy of the top of the stack and
-			  saves it in the symbol table under "name."
-
-camera eye aim - establishes a camera. Eye and aim are
-			  x y z triples.
-
 
 save filename - save the image in its current state under
-			  the name "filename."
+        the name "filename."
 
-gereate_rayfiles - Instruct the interpreter to generate source
-			  files for a ray tracer for each frame rendered.
-
-focal value		- set the focal length of the camera
-
-display			- display the current image on the screen
+display - display the current image on the screen
 
 
 LEX & BISON NOTES

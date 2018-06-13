@@ -244,6 +244,7 @@ module Draw
     while (line = f.gets)
       line = line.chomp.split(" ")
       if line[0] == "v"
+        line = line.map{|s| (s.include?("/") ? s[0...s.index["/"]] : s)} #Deal with .obj weirdness
         vertices.push(line[1..3].map{|x| x.to_f})
       end
       if line[0] == "f"

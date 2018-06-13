@@ -150,7 +150,7 @@ module Utils
           temp = Matrix.new(4, 0)
           Draw.box(args[0], args[1], args[2], args[3], args[4], args[5], temp)
           MatrixUtils.multiply($COORDSYS.peek(), temp)
-          if operation.has_key?("constants")
+          if operation.has_key?("constants") and operation["constants"]
             ret = $CONSTANTS[operation["constants"]]
             Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
           else
@@ -162,7 +162,7 @@ module Utils
           temp = Matrix.new(4, 0)
           Draw.sphere(args[0], args[1], args[2], args[3], temp)
           MatrixUtils.multiply($COORDSYS.peek(), temp)
-          if operation.has_key?("constants")
+          if operation.has_key?("constants") and operation["constants"]
             ret = $CONSTANTS[operation["constants"]]
             Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
           else
@@ -174,7 +174,7 @@ module Utils
           temp = Matrix.new(4, 0)
           Draw.torus(args[0], args[1], args[2], args[3], args[4], temp)
           MatrixUtils.multiply($COORDSYS.peek(), temp)
-          if operation.has_key?("constants")
+          if operation.has_key?("constants") and operation["constants"]
             ret = $CONSTANTS[operation["constants"]]
             Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
           else
@@ -184,7 +184,7 @@ module Utils
           temp = Matrix.new(4, 0)
           Draw.create_obj(args[0], temp)
           MatrixUtils.multiply($COORDSYS.peek(), temp)
-          if operation.has_key?("constants")
+          if operation.has_key?("constants") and operation["constants"]
             ret = $CONSTANTS[operation["constants"]]
             Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
           else

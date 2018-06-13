@@ -1,0 +1,9 @@
+basename pikachu
+//constants yellowfur 0.3 0.3 0.2 0.7 0.7 0.3 0.1 0.1 0.1
+light one 0 0.75 1 255 255 0
+constants yellowfur 0.1 0.5 0.5 0.1 0.5 0.5 0.1 0.5 0.5
+push
+move 230 230 0
+scale 500 500 500
+mesh yellowfur :pikachu.obj
+display
