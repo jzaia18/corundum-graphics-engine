@@ -20,6 +20,7 @@ $OUTFILE = "image.ppm"
 $TEMPFILE = "temmmmp.ppm" # Used as temp storage for displaying
 $COMPYLED_CODE_LOC = "__COMPYLED_CODE__"
 $OUTPUT_FOLDER = "anim/"
+$OBJ_FOLDER = "obj/"
 $STEP = 12 # Number of iterations needed to to finish a parametric
 $FRAMES = nil
 $BASENAME = nil

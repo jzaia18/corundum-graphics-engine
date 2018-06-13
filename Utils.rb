@@ -80,7 +80,6 @@ module Utils
         temp["ks"] = [bad_format["red"][2], bad_format["green"][2], bad_format["blue"][2]]
 
         $CONSTANTS[var[0]] = temp
-        puts $CONSTANTS
       end
     end
 
@@ -181,6 +180,16 @@ module Utils
           else
             Draw.push_polygon_matrix(temp)
           end
+        when "mesh"
+          temp = Matrix.new(4, 0)
+          Draw.create_obj(args[0], temp)
+          MatrixUtils.multiply($COORDSYS.peek(), temp)
+          if operation.has_key?("constants")
+            ret = $CONSTANTS[operation["constants"]]
+            Draw.push_polygon_matrix(temp, ka: ret["ka"], kd: ret["kd"], ks: ret["ks"])
+          else
+            Draw.push_polygon_matrix(temp)
+          end
         when "clear"
           $SCREEN = Screen.new($RESOLUTION)
         when "scale"
@@ -231,7 +240,7 @@ module Utils
       Process.waitall
       print %x[convert #{$OUTPUT_FOLDER}/*#{$BASENAME}.png #{$BASENAME}.gif]
       print %x[rm #{$OUTPUT_FOLDER}/*#{$BASENAME}.png]
-      print %x[animate #{$BASENAME}.gif]
+      print %x[animate -delay 3 #{$BASENAME}.gif]
     end
   end
 end

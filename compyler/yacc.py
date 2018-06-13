@@ -135,7 +135,7 @@ class NullLogger(object):
         return self
     def __call__(self,*args,**kwargs):
         return self
-        
+
 # Exception raised for yacc-related errors
 class YaccError(Exception):   pass
 

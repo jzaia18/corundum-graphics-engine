@@ -236,6 +236,33 @@ module Draw
     return ret
   end
 
+  # Create a mesh from a specified .obj file
+  def self.create_obj(file_loc, mat)
+    f = File.new($OBJ_FOLDER + file_loc, 'r')
+    vertices = []
+    faces = []
+    while (line = f.gets)
+      line = line.chomp.split(" ")
+      if line[0] == "v"
+        vertices.push(line[1..3].map{|x| x.to_f})
+      end
+      if line[0] == "f"
+        faces.push(line[1...line.length].map{|x| x.to_i}.map{|x| (x < 0 ? x : x-1)})
+      end
+    end
+
+    for face in faces
+      for i in (1...face.length-1)
+        p0 = vertices[face[0]]
+        p1 = vertices[face[i]]
+        p2 = vertices[face[i+1]]
+        add_polygon(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], mat)
+      end
+    end
+
+    f.close
+  end
+
   # Helper for add_edge
   def self.add_point(x, y, z, mat)
     mat.add_col([x, y, z, 1])
