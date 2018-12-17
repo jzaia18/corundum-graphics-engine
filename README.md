@@ -15,12 +15,12 @@ This version contains 2 new major features:
 
 2) For example code execution, type `make`
 
-3) Create any file with the extension `.mdl`. A full list of commands may be found in the MDL.spec file located in the root of the repository.
+3) Create any file with the extension `.mdl`. A full list of commands may be found in the **MDL.spec** file located in the root of the repository.
 
 4) Execute your own code with `ruby Main.rb <filename>.mdl`
 
 ## Dependencies?
-The Corundum engine runs primarily on Ruby but does require some a few other packages
+The Corundum engine runs primarily on Ruby but does require a few other packages
 * Ruby
 * Python 2
 * Image Magick
