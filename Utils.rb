@@ -58,7 +58,7 @@ module Utils
   end
 
   def self.parse_file(filename: $INFILE)
-    puts %x[python compyler/main.py #{filename}]
+    puts %x[python2 compyler/main.py #{filename}]
 
     file = File.new($COMPYLED_CODE_LOC, "r")
     code = format_compyled_code(file.gets)
